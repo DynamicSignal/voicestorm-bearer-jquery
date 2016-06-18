@@ -1,6 +1,7 @@
 $(function () {
 
     var $form = $('form');
+    var $community = $form.find('#community');
     var $tokenSecret = $form.find('#token-secret');
     var $accessToken = $form.find('#access-token');
     var $result = $form.find('#result');
@@ -8,7 +9,7 @@ $(function () {
     $form.on('click', 'button', function (e) {
 
         // Get the community
-        var community = $form.find('#community').val();
+        var community = $community.val();
         console.log("Community", community);
 
         // Get access token and token secret
@@ -41,21 +42,53 @@ $(function () {
             "crossDomain": true,
             "url": "https://" + community + "/v1/oauth2/token",
             "method": "POST",
-            "headers": { 
-                "Authorization": authorizationHeader,
+            "headers": {
+                "Authorization": authorizationHeader
             },
             "mimeType": "multipart/form-data",
             "dataType": "json",
             "data": { "grant_type": "client_credentials" }
         }
 
-        // Perform the AJAX request and handle the response
-        $.ajax(settings).done(function (response, status) {
-            $result.text(status);
-            console.log("Response", response);
-        });
+        // Perform the AJAX request, process the result, and use the new access token to make an authenticated call
+        $.ajax(settings).then(GetAccessTokenFromResponse).then(UseAccessToken);
 
     });
 
-});
+    // Take the response from the oauth2 call and return the access token
+    function GetAccessTokenFromResponse(response) {
+        console.log("OAuth2 Response", response);
 
+        $result.text(JSON.stringify(response));
+
+        return response.access_token;
+    }
+
+    // Makes an authenticated GET /v1/groups request
+    function UseAccessToken(accessToken) {
+
+        // Get the community
+        var community = $community.val();
+
+        // Create Authorization header with the returned access token
+        var authorizationHeader = "Bearer " + accessToken;
+        console.log("Authorization Header (Bearer)", authorizationHeader);
+
+        // Create the AJAX settings to be used in the authenticated GET request
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "https://" + community + "/v1/groups",
+            "method": "GET",
+            "headers": {
+                "authorization": authorizationHeader
+            }
+        }
+
+        // Perform the AJAX request and log the response
+        $.ajax(settings).done(function (response) {
+            console.log("Authenticated GET Response", response);
+        });
+    }
+
+});
