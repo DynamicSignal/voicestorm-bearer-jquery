@@ -35,10 +35,6 @@ $(function () {
         var authorizationHeader = "Basic " + credentialsEncoded;
         console.log("Authorization Header", authorizationHeader);
 
-        // Create form data for login request
-        var form = new FormData();
-        form.append("grant_type", "client_credentials");
-
         // Create the settings to be used in the AJAX request
         var settings = {
             "async": true,
@@ -49,8 +45,8 @@ $(function () {
                 "Authorization": authorizationHeader,
             },
             "mimeType": "multipart/form-data",
-            "processData": false,
-            "data": form
+            "dataType": "json",
+            "data": { "grant_type": "client_credentials" }
         }
 
         // Perform the AJAX request and handle the response
