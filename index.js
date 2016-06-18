@@ -50,6 +50,8 @@ $(function () {
             "data": { "grant_type": "client_credentials" }
         }
 
+        console.log("Performing OAuth2 request to " + settings.url);
+
         // Perform the AJAX request, process the result, and use the new access token to make an authenticated call
         $.ajax(settings).then(GetAccessTokenFromResponse).then(UseAccessToken);
 
@@ -84,6 +86,8 @@ $(function () {
                 "authorization": authorizationHeader
             }
         }
+
+        console.log("Performing Groups request to " + settings.url);
 
         // Perform the AJAX request and log the response
         $.ajax(settings).done(function (response) {
