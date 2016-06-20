@@ -1,10 +1,10 @@
 $(function () {
-
+    
     var $form = $('form');
     var $community = $form.find('#community');
     var $tokenSecret = $form.find('#token-secret');
     var $accessToken = $form.find('#access-token');
-    var $result = $form.find('#result');
+    var $result = $('#result');
 
     $form.on('click', 'button', function (e) {
 
@@ -52,7 +52,8 @@ $(function () {
 
         console.log("Performing OAuth2 request to " + settings.url);
 
-        // Perform the AJAX request, process the result, and use the new access token to make an authenticated call
+        // Perform the AJAX request, process the result, and use the new access token to make an authenticated call.
+        // Note: This call will likely fail because of CORS restrictions for your community. In order to get around this restriction, you will need to add the testing domain to your community's Trusted API Domains or host the file on an existing one.
         $.ajax(settings).then(GetAccessTokenFromResponse).then(UseAccessToken);
 
     });
@@ -61,7 +62,7 @@ $(function () {
     function GetAccessTokenFromResponse(response) {
         console.log("OAuth2 Response", response);
 
-        $result.text(JSON.stringify(response));
+        $result.html(JSON.stringify(response, null, 4));
 
         return response.access_token;
     }
